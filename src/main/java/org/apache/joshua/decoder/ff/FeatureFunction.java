@@ -342,6 +342,12 @@ public abstract class FeatureFunction {
     public float getScore() {
       return score;
     }
+
+    public void addAll(FeatureVector fv, int len, int denseFeatureIndex) {
+      for (int i = 0; i < len; i++) {
+        score += fv.getDense(i) * weights.getDense(i + denseFeatureIndex);
+      }
+    }
   }
 
   public class FeatureAccumulator implements Accumulator {

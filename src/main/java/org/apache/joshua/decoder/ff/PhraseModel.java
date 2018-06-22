@@ -117,9 +117,13 @@ public class PhraseModel extends StatelessFF {
       
 //      System.err.println(String.format("RULE = %s / %f", rule.getEnglishWords(), rule.getPrecomputableCost()));
       FeatureVector fv = rule.getFeatureVector();
-      for (int k = 0; k < phrase_weights.length; k++) {
+      if (acc instanceof ScoreAccumulator) {
+        ((ScoreAccumulator) acc).addAll(fv, phrase_weights.length, denseFeatureIndex);
+      } else {
+        for (int k = 0; k < phrase_weights.length; k++) {
 //        System.err.println(String.format("k = %d, denseFeatureIndex = %d, owner = %s, ownerID = %d", k, denseFeatureIndex, owner, ownerID));
-        acc.add(k + denseFeatureIndex, fv.getDense(k));
+          acc.add(k + denseFeatureIndex, fv.getDense(k));
+        }
       }
       
       for (String key: fv.keySet()) {
