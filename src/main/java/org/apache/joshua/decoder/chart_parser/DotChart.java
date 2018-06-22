@@ -19,6 +19,8 @@
 package org.apache.joshua.decoder.chart_parser;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.joshua.decoder.ff.tm.Grammar;
@@ -242,8 +244,18 @@ class DotChart {
 
     /* For every partially complete item over (i,k) */
     for (DotNode dotNode : dotcells.get(i, k).dotNodes) {
+      List<Integer> nts = new ArrayList<Integer>();
+      Trie dot_trie = dotNode.getTrieNode();
+      Iterator<Integer> it = dot_trie.getNonterminalExtensionIterator();
+      while (it.hasNext()) {
+        nts.add(it.next());
+      }
+      Collections.sort(nts);
       /* For every completed nonterminal in the main chart */
       for (SuperNode superNode : superNodes) {
+        if (Collections.binarySearch(nts, superNode.lhs) < 0) {
+          continue;
+        }
 
         // String arcWord = Vocabulary.word(superNode.lhs);
         // logger.info("DotChart.extendDotItemsWithProvedItems: " + arcWord);
