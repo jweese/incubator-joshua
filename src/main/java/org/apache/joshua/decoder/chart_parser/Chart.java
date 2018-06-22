@@ -709,8 +709,6 @@ public class Chart {
             HGNode resNode = chartBin.addHyperEdgeInCell(states, rule, i, j, antecedents,
                 new SourcePath(), true);
 
-            if (LOG.isDebugEnabled())
-              LOG.debug("{}", rule);
             if (null != resNode && !seen_lhs.contains(resNode.lhs)) {
               queue.add(resNode);
               qtyAdditionsToQueue++;

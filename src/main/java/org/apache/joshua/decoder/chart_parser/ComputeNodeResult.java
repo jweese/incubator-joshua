@@ -118,12 +118,6 @@ public class ComputeNodeResult {
       this.transitionCost += acc.getScore();
 
 
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("FEATURE {} = {} * {} = {}", feature.getName(),
-            acc.getScore() / Decoder.weights.getSparse(feature.getName()),
-            Decoder.weights.getSparse(feature.getName()), acc.getScore());
-      }
-
       if (feature.isStateful()) {
         futureCostEstimate += feature.estimateFutureCost(rule, newState, sentence);
         allDPStates.add(((StatefulFF)feature).getStateIndex(), newState);
