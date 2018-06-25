@@ -58,7 +58,9 @@ public class ExtractTopCand {
     String inFile = "-";
     String outFile = "-";
     int field = 1;
-    if (args.length == 1) {
+    if (args.length == 0) {
+      // do nothing.
+    } else if (args.length == 1) {
       inFile = args[0];
     } else if (args.length == 2) {
       inFile = args[0];
