@@ -19,8 +19,11 @@
 package org.apache.joshua.decoder.ff.tm.hash_based;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.joshua.decoder.ff.tm.RuleCollection;
 import org.apache.joshua.decoder.ff.tm.Trie;
@@ -31,6 +34,7 @@ import org.apache.joshua.decoder.ff.tm.Trie;
 public class MemoryBasedTrie implements Trie {
   MemoryBasedRuleBin ruleBin = null;
   HashMap<Integer, MemoryBasedTrie> childrenTbl = null;
+  List<Integer> sortedNTs = null;
 
   public MemoryBasedTrie() {
   }
@@ -53,6 +57,19 @@ public class MemoryBasedTrie implements Trie {
 
   public void setExtensions(HashMap<Integer, MemoryBasedTrie> tbl_children_) {
     this.childrenTbl = tbl_children_;
+  }
+
+  public List<Integer> getSortedNTs() {
+    if (sortedNTs == null) {
+      sortedNTs = new ArrayList<>();
+      for (int i : childrenTbl.keySet()) {
+        if (i < 0) {
+          sortedNTs.add(i);
+        }
+      }
+      Collections.sort(sortedNTs);
+    }
+    return sortedNTs;
   }
 
   /* See Javadoc for Trie interface. */

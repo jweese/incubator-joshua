@@ -22,11 +22,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.joshua.decoder.ff.tm.Grammar;
 import org.apache.joshua.decoder.ff.tm.Rule;
 import org.apache.joshua.decoder.ff.tm.RuleCollection;
 import org.apache.joshua.decoder.ff.tm.Trie;
+import org.apache.joshua.decoder.ff.tm.hash_based.MemoryBasedTrie;
 import org.apache.joshua.decoder.segment_file.Token;
 import org.apache.joshua.lattice.Arc;
 import org.apache.joshua.lattice.Lattice;
@@ -244,13 +246,27 @@ class DotChart {
 
     /* For every partially complete item over (i,k) */
     for (DotNode dotNode : dotcells.get(i, k).dotNodes) {
-      List<Integer> nts = new ArrayList<Integer>();
       Trie dot_trie = dotNode.getTrieNode();
-      Iterator<Integer> it = dot_trie.getNonterminalExtensionIterator();
-      while (it.hasNext()) {
-        nts.add(it.next());
+      if (dot_trie.getChildren() == null) {
+        continue;
       }
-      Collections.sort(nts);
+      List<Integer> nts;
+      if (dot_trie instanceof MemoryBasedTrie) {
+        nts = ((MemoryBasedTrie) dot_trie).getSortedNTs();
+      } else {
+        Set<Integer> children = dot_trie.getChildren().keySet();
+        nts = new ArrayList<Integer>(children.size());
+        for (int nt : children) {
+          if (nt < 0) {
+            nts.add(nt);
+          }
+        }
+        Collections.sort(nts);
+      }
+      if (nts == null) {
+        // System.err.printf("### nts is null\n");
+        continue;
+      }
       /* For every completed nonterminal in the main chart */
       for (SuperNode superNode : superNodes) {
         if (Collections.binarySearch(nts, superNode.lhs) < 0) {
