@@ -59,15 +59,22 @@ public class MemoryBasedTrie implements Trie {
     this.childrenTbl = tbl_children_;
   }
 
+  private synchronized void populateSortedNTs() {
+    if (sortedNTs != null) {
+      return;
+    }
+    sortedNTs = new ArrayList<>();
+    for (int i : childrenTbl.keySet()) {
+      if (i < 0) {
+        sortedNTs.add(i);
+      }
+    }
+    Collections.sort(sortedNTs);
+  }
+
   public List<Integer> getSortedNTs() {
     if (sortedNTs == null) {
-      sortedNTs = new ArrayList<>();
-      for (int i : childrenTbl.keySet()) {
-        if (i < 0) {
-          sortedNTs.add(i);
-        }
-      }
-      Collections.sort(sortedNTs);
+      populateSortedNTs();
     }
     return sortedNTs;
   }

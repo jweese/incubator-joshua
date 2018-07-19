@@ -110,6 +110,9 @@ public class GrammarBuilderWalkerFunction implements WalkerFunction {
 
   private static int[] getNewSource(boolean isGlue, HyperEdge edge) {
     Rule rule = edge.getRule();
+    if (rule == null) {
+      return null;
+    }
     int[] english = rule.getEnglish();
     // if this is a unary abstract rule, just return null
     // TODO: except glue rules!
