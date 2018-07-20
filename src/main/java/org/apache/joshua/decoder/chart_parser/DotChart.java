@@ -246,10 +246,6 @@ class DotChart {
       return;
     }
 
-    // complete super-items (items over the same span with different LHSs)
-    List<SuperNode> superNodes =
-        new ArrayList<>(cell.getSortedSuperItems().values());
-
     /* For every partially complete item over (i,k) */
     for (DotNode dotNode : dc) {
       Trie dot_trie = dotNode.getTrieNode();
@@ -273,7 +269,7 @@ class DotChart {
         continue;
       }
       /* For every completed nonterminal in the main chart */
-      for (SuperNode superNode : superNodes) {
+      for (SuperNode superNode : cell.getSortedSuperItems().values()) {
         if (Collections.binarySearch(nts, superNode.lhs) < 0) {
           continue;
         }
