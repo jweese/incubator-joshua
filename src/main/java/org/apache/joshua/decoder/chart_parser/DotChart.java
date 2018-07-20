@@ -237,15 +237,21 @@ class DotChart {
    * @param skipUnary if true, don't extend unary rules
    */
   private void extendDotItemsWithProvedItems(int i, int k, int j, boolean skipUnary) {
-    if (this.dotcells.get(i, k) == null || this.dotChart.getCell(k, j) == null) {
+    DotCell dc = dotcells.get(i, k);
+    Cell cell = dotChart.getCell(k, j);
+
+    if (dc == null || dc.dotNodes.isEmpty()) {
+      return;
+    } else if (cell == null || cell.getSortedSuperItems().isEmpty()) {
       return;
     }
 
     // complete super-items (items over the same span with different LHSs)
-    List<SuperNode> superNodes = new ArrayList<>(this.dotChart.getCell(k, j).getSortedSuperItems().values());
+    List<SuperNode> superNodes =
+        new ArrayList<>(cell.getSortedSuperItems().values());
 
     /* For every partially complete item over (i,k) */
-    for (DotNode dotNode : dotcells.get(i, k).dotNodes) {
+    for (DotNode dotNode : dc.dotNodes) {
       Trie dot_trie = dotNode.getTrieNode();
       if (dot_trie.getChildren() == null) {
         continue;
@@ -284,7 +290,7 @@ class DotChart {
          * undocumented feature that introduces a complexity, in that the next "word" in the grammar
          * rule might match more than one outgoing arc in the grammar trie.
          */
-        Trie child_node = dotNode.getTrieNode().match(superNode.lhs);
+        Trie child_node = dot_trie.match(superNode.lhs);
         if (child_node != null) {
           if ((!skipUnary) || (child_node.hasExtensions())) {
             addDotItem(child_node, i, j, dotNode.getAntSuperNodes(), superNode, dotNode
