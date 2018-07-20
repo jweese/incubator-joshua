@@ -61,8 +61,9 @@ public class FeatureVector {
   public FeatureVector() {
     sparseFeatures = new HashMap<>();
     denseFeatures = new ArrayList<>(DENSE_FEATURE_NAMES.size());
-    for (int i = 0; i < denseFeatures.size(); i++)
-      denseFeatures.set(i, 0.0f);
+    for (int i = 0; i < DENSE_FEATURE_NAMES.size(); i++) {
+      denseFeatures.add(0.0f);
+    }
   }
 
   /**

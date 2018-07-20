@@ -333,8 +333,9 @@ public class Rule implements Comparator<Rule>, Comparable<Rule> {
   public void setPrecomputableCost(float[] dense_weights, FeatureVector weights) {
     float cost = 0.0f;
     FeatureVector features = getFeatureVector();
-    for (int i = 0; i < features.getDenseFeatures().size() && i < dense_weights.length; i++) {
-      cost += dense_weights[i] * features.getDense(i);
+    List<Float> dense = features.getDenseFeatures();
+    for (int i = 0; i < dense.size() && i < dense_weights.length; i++) {
+      cost += dense_weights[i] * dense.get(i);
     }
 
     for (String key: features.getSparseFeatures().keySet()) {
