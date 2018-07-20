@@ -213,7 +213,7 @@ public class Chart {
         continue;
 
       // for each rule with applicable rules
-      for (DotNode dotNode : dotcharts[g].getDotCell(i, j).getDotNodes()) {
+      for (DotNode dotNode : dotcharts[g].getDotCell(i, j)) {
         RuleCollection ruleCollection = dotNode.getRuleCollection();
         if (ruleCollection == null)
           continue;

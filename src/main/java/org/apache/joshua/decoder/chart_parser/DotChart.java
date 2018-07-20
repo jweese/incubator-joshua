@@ -47,8 +47,7 @@ import org.slf4j.LoggerFactory;
  * the final terminal of the span or (b) needs a nonterminal and matches against a completed
  * nonterminal in the main chart at some split point (k,j).
  *
- * Once a rule is completed, it is entered into the {@link DotChart}. {@link DotCell} objects are
- * used to group completed DotNodes over a span.
+ * Once a rule is completed, it is entered into the {@link DotChart}. 
  *
  * There is a separate DotChart for every grammar.
  *
@@ -72,9 +71,9 @@ class DotChart {
    * Two-dimensional chart of cells. Some cells might be null. This could definitely be represented
    * more efficiently, since only the upper half of this triangle is every used.
    */
-  private final ChartSpan<DotCell> dotcells;
+  private final ChartSpan<ArrayList<DotNode>> dotcells;
 
-  public DotCell getDotCell(int i, int j) {
+  public List<DotNode> getDotCell(int i, int j) {
     return dotcells.get(i, j);
   }
 
@@ -190,7 +189,7 @@ class DotChart {
         // dotitem in dot_bins[i][k]: looking for an item in the right to the dot
 
 
-        for (DotNode dotNode : dotcells.get(i, j - 1).getDotNodes()) {
+        for (DotNode dotNode : dotcells.get(i, j - 1)) {
 
           // String arcWord = Vocabulary.word(last_word);
           // Assert.assertFalse(arcWord.endsWith("]"));
@@ -237,8 +236,8 @@ class DotChart {
    * @param skipUnary if true, don't extend unary rules
    */
   private void extendDotItemsWithProvedItems(int i, int k, int j, boolean skipUnary) {
-    DotCell dc = dotcells.get(i, k);
-    if (dc == null || dc.dotNodes.isEmpty()) {
+    List<DotNode> dc = dotcells.get(i, k);
+    if (dc == null || dc.isEmpty()) {
       return;
     }
 
@@ -252,7 +251,7 @@ class DotChart {
         new ArrayList<>(cell.getSortedSuperItems().values());
 
     /* For every partially complete item over (i,k) */
-    for (DotNode dotNode : dc.dotNodes) {
+    for (DotNode dotNode : dc) {
       Trie dot_trie = dotNode.getTrieNode();
       if (dot_trie.getChildren() == null) {
         continue;
@@ -323,51 +322,20 @@ class DotChart {
     }
 
     DotNode item = new DotNode(i, j, tnode, antSuperNodes, srcPath);
-    if (dotcells.get(i, j) == null) {
-      dotcells.set(i, j, new DotCell());
+    ArrayList<DotNode> cell = dotcells.get(i, j);
+    if (cell == null) {
+      cell = new ArrayList<DotNode>();
+      cell.add(item);
+      dotcells.set(i, j, cell);
+    } else {
+      cell.add(item);
     }
-    dotcells.get(i, j).addDotNode(item);
     dotChart.nDotitemAdded++;
-
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("Add a dotitem in cell ({}, {}), n_dotitem={}, {}", i, j,
-          dotChart.nDotitemAdded, srcPath);
-
-      RuleCollection rules = tnode.getRuleCollection();
-      if (rules != null) {
-        for (Rule r : rules.getRules()) {
-          // System.out.println("rule: "+r.toString());
-          LOG.debug("{}", r);
-        }
-      }
-    }
   }
 
   // ===============================================================
   // Package-protected classes
   // ===============================================================
-
-  /**
-   * A DotCell groups together DotNodes that have been applied over a particular span. A DotNode, in
-   * turn, is a partially-applied grammar rule, represented as a pointer into the grammar trie
-   * structure.
-   */
-  static class DotCell {
-
-    // Package-protected fields
-    private final List<DotNode> dotNodes = new ArrayList<>();
-
-    public List<DotNode> getDotNodes() {
-      return dotNodes;
-    }
-
-    private void addDotNode(DotNode dt) {
-      /*
-       * if(l_dot_items==null) l_dot_items= new ArrayList<DotItem>();
-       */
-      dotNodes.add(dt);
-    }
-  }
 
   /**
    * A DotNode represents the partial application of a rule rooted to a particular span (i,j). It
