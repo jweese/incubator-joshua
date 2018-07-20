@@ -34,7 +34,7 @@ import org.apache.joshua.decoder.ff.tm.Trie;
 public class MemoryBasedTrie implements Trie {
   MemoryBasedRuleBin ruleBin = null;
   HashMap<Integer, MemoryBasedTrie> childrenTbl = null;
-  List<Integer> sortedNTs = null;
+  int[] sortedNTs = null;
 
   public MemoryBasedTrie() {
   }
@@ -63,16 +63,20 @@ public class MemoryBasedTrie implements Trie {
     if (sortedNTs != null) {
       return;
     }
-    sortedNTs = new ArrayList<>();
+    List<Integer> tmp = new ArrayList<>();
     for (int i : childrenTbl.keySet()) {
       if (i < 0) {
-        sortedNTs.add(i);
+        tmp.add(i);
       }
     }
-    Collections.sort(sortedNTs);
+    Collections.sort(tmp);
+    sortedNTs = new int[tmp.size()];
+    for (int i = 0; i < sortedNTs.length; i++) {
+      sortedNTs[i] = tmp.get(i);
+    }
   }
 
-  public List<Integer> getSortedNTs() {
+  public int[] getSortedNTs() {
     if (sortedNTs == null) {
       populateSortedNTs();
     }

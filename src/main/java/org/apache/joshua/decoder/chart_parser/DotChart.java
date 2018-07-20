@@ -18,6 +18,7 @@
  */
 package org.apache.joshua.decoder.chart_parser;
 
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -252,25 +253,29 @@ class DotChart {
       if (dot_trie.getChildren() == null) {
         continue;
       }
-      List<Integer> nts;
+      int[] nts;
       if (dot_trie instanceof MemoryBasedTrie) {
         nts = ((MemoryBasedTrie) dot_trie).getSortedNTs();
       } else {
         Set<Integer> children = dot_trie.getChildren().keySet();
-        nts = new ArrayList<Integer>(children.size());
+        List<Integer> tmp = new ArrayList<Integer>(children.size());
         for (int nt : children) {
           if (nt < 0) {
-            nts.add(nt);
+            tmp.add(nt);
           }
         }
-        Collections.sort(nts);
+        Collections.sort(tmp);
+        nts = new int[tmp.size()];
+        for (int x = 0; x < nts.length; x++) {
+          nts[x] = tmp.get(x);
+        }
       }
-      if (nts.isEmpty()) {
+      if (nts.length == 0) {
         continue;
       }
       /* For every completed nonterminal in the main chart */
       for (SuperNode superNode : cell.getSortedSuperItems().values()) {
-        if (Collections.binarySearch(nts, superNode.lhs) < 0) {
+        if (Arrays.binarySearch(nts, superNode.lhs) < 0) {
           continue;
         }
 
