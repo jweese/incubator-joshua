@@ -259,35 +259,36 @@ class Cell {
    * mainly needed for goal_bin and cube-pruning
    */
   private void ensureSorted() {
-    if (null == this.sortedNodes) {
-      
-      // get sortedNodes.
-      this.sortedNodes = new ArrayList<>(this.nodesSigTbl.size());
-      for (HGNode node : this.nodesSigTbl.values()) {
-        this.sortedNodes.add(node);
-      }
+    if (sortedNodes != null) {
+      return;
+    }
 
-      // sort the node in an decreasing-LogP order 
-      this.sortedNodes.sort(HGNode.inverseLogPComparator);
+    // get sortedNodes.
+    this.sortedNodes = new ArrayList<>(this.nodesSigTbl.size());
+    for (HGNode node : this.nodesSigTbl.values()) {
+      this.sortedNodes.add(node);
+    }
 
-      // TODO: we cannot create new SuperItem here because the DotItem link to them.
-      // Thus, we clear nodes from existing SuperNodes
-      for (SuperNode superNode : this.superNodesTbl.values()) {
-        superNode.nodes.clear();
-      }
+    // sort the node in an decreasing-LogP order 
+    this.sortedNodes.sort(HGNode.inverseLogPComparator);
 
-      for (HGNode node : this.sortedNodes) {
-        SuperNode superNode = this.superNodesTbl.get(node.lhs);
-        checkNotNull(superNode, "Does not have super Item, have to exist");
-        superNode.nodes.add(node);
-      }
+    // TODO: we cannot create new SuperItem here because the DotItem link to them.
+    // Thus, we clear nodes from existing SuperNodes
+    for (SuperNode superNode : this.superNodesTbl.values()) {
+      superNode.nodes.clear();
+    }
 
-      // Remove SuperNodes who may not contain any nodes anymore due to pruning
-      for (Iterator<Entry<Integer, SuperNode>> it = this.superNodesTbl.entrySet().iterator(); it.hasNext(); ) {
-        Entry<Integer, SuperNode> entry = it.next();
-        if (entry.getValue().nodes.isEmpty()) {
-          it.remove();
-        }
+    for (HGNode node : this.sortedNodes) {
+      SuperNode superNode = this.superNodesTbl.get(node.lhs);
+      checkNotNull(superNode, "Does not have super Item, have to exist");
+      superNode.nodes.add(node);
+    }
+
+    // Remove SuperNodes who may not contain any nodes anymore due to pruning
+    for (Iterator<Entry<Integer, SuperNode>> it = this.superNodesTbl.entrySet().iterator(); it.hasNext(); ) {
+      Entry<Integer, SuperNode> entry = it.next();
+      if (entry.getValue().nodes.isEmpty()) {
+        it.remove();
       }
     }
   }
