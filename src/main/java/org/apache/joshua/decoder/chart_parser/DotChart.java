@@ -238,11 +238,12 @@ class DotChart {
    */
   private void extendDotItemsWithProvedItems(int i, int k, int j, boolean skipUnary) {
     DotCell dc = dotcells.get(i, k);
-    Cell cell = dotChart.getCell(k, j);
-
     if (dc == null || dc.dotNodes.isEmpty()) {
       return;
-    } else if (cell == null || cell.getSortedSuperItems().isEmpty()) {
+    }
+
+    Cell cell = dotChart.getCell(k, j);
+    if (cell == null || cell.getSortedSuperItems().isEmpty()) {
       return;
     }
 
@@ -269,8 +270,7 @@ class DotChart {
         }
         Collections.sort(nts);
       }
-      if (nts == null) {
-        // System.err.printf("### nts is null\n");
+      if (nts.isEmpty()) {
         continue;
       }
       /* For every completed nonterminal in the main chart */
