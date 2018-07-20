@@ -264,10 +264,7 @@ class Cell {
     }
 
     // get sortedNodes.
-    this.sortedNodes = new ArrayList<>(this.nodesSigTbl.size());
-    for (HGNode node : this.nodesSigTbl.values()) {
-      this.sortedNodes.add(node);
-    }
+    this.sortedNodes = new ArrayList<>(this.nodesSigTbl.values());
 
     // sort the node in an decreasing-LogP order 
     this.sortedNodes.sort(HGNode.inverseLogPComparator);
